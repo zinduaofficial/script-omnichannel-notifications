@@ -1,6 +1,7 @@
 import argparse
 import os
 import smtplib
+from pathlib import Path
 from email.message import EmailMessage
 from email.utils import formataddr, make_msgid
 
@@ -9,6 +10,35 @@ def parse_bool(value: str | None, default: bool) -> bool:
 	if value is None:
 		return default
 	return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def load_env_file(file_path: str = ".env") -> None:
+	env_path = Path(file_path)
+	if not env_path.exists():
+		return
+
+	for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+		line = raw_line.strip()
+		if not line or line.startswith("#"):
+			continue
+		if line.startswith("export "):
+			line = line[7:].strip()
+		if "=" not in line:
+			continue
+
+		key, value = line.split("=", 1)
+		key = key.strip()
+		value = value.strip()
+
+		if not key:
+			continue
+
+		if value.startswith(('"', "'")) and value.endswith(('"', "'")) and len(value) >= 2:
+			value = value[1:-1]
+		elif " #" in value:
+			value = value.split(" #", 1)[0].strip()
+
+		os.environ.setdefault(key, value)
 
 
 def get_provider_defaults(provider: str, region: str | None):
@@ -46,8 +76,8 @@ def resolve_config(args):
 	port = args.port or int(os.getenv("SMTP_PORT", provider_defaults["port"]))
 	username = args.username or os.getenv("SMTP_USERNAME") or provider_defaults["username"]
 	password = args.password or os.getenv("SMTP_PASSWORD")
-	from_email = args.from_email or os.getenv("SMTP_FROM_EMAIL")
-	from_name = args.from_name or os.getenv("SMTP_FROM_NAME")
+	from_email = args.from_email or os.getenv("SMTP_FROM_EMAIL") or os.getenv("SENDER_EMAIL")
+	from_name = args.from_name or os.getenv("SMTP_FROM_NAME") or os.getenv("SENDER_NAME")
 
 	use_tls = args.use_tls
 	if use_tls is None:
@@ -160,6 +190,8 @@ def build_parser():
 
 
 def main():
+	load_env_file(".env")
+
 	parser = build_parser()
 	args = parser.parse_args()
 
