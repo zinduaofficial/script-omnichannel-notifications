@@ -5,6 +5,14 @@ Script on omnichannel notifications using SMTP, Twilio SMS, and Discord/Slack co
 
 Use `emailSMTP.py` to send transactional emails through any SMTP provider, including **SendGrid** and **AWS SES**.
 
+### Install dependency
+
+```bash
+pip install python-dotenv
+```
+
+The script automatically loads credentials from `.env` using `python-dotenv`.
+
 ### 1) Set environment variables
 
 You can pass values by CLI flags, but env vars are easiest:
