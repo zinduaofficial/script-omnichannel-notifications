@@ -8,12 +8,13 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+'''
 def _read_bool_env(var_name: str, default: bool = False) -> bool:
 	value = os.getenv(var_name)
 	if value is None:
 		return default
 	return value.strip().lower() in {"1", "true", "yes", "on"}
-
+'''
 
 def send_email(to: str, subject: str, message: str, html: str | None = None) -> None:
 	"""Send a transactional email using SMTP credentials from .env."""
@@ -21,8 +22,8 @@ def send_email(to: str, subject: str, message: str, html: str | None = None) -> 
 	smtp_port = os.getenv("SMTP_PORT", "587")  # Default to 587 if not set
 	smtp_username = os.getenv("SMTP_USERNAME")
 	smtp_password = os.getenv("SMTP_PASSWORD")
-	smtp_use_tls = _read_bool_env("SMTP_USE_TLS", default=True)
-	smtp_use_ssl = _read_bool_env("SMTP_USE_SSL", default=False)
+	smtp_use_tls = os.getenv("SMTP_USE_TLS", "True").strip().lower() in {"1", "true", "yes", "on"}
+	smtp_use_ssl = os.getenv("SMTP_USE_SSL", "False").strip().lower() in {"1", "true", "yes", "on"}
 	sender_email = os.getenv("SMTP_SENDER_EMAIL")
 	sender_name = os.getenv("SMTP_SENDER_NAME", "Zindua LMS")
 
