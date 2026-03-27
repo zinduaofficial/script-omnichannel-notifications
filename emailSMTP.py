@@ -18,13 +18,13 @@ def _read_bool_env(var_name: str, default: bool = False) -> bool:
 def send_email(to: str, subject: str, message: str, html: str | None = None) -> None:
 	"""Send a transactional email using SMTP credentials from .env."""
 	smtp_host = os.getenv("SMTP_HOST")
-	smtp_port = os.getenv("SMTP_PORT", "587")
+	smtp_port = os.getenv("SMTP_PORT", "587")  # Default to 587 if not set
 	smtp_username = os.getenv("SMTP_USERNAME")
 	smtp_password = os.getenv("SMTP_PASSWORD")
 	smtp_use_tls = _read_bool_env("SMTP_USE_TLS", default=True)
 	smtp_use_ssl = _read_bool_env("SMTP_USE_SSL", default=False)
 	sender_email = os.getenv("SMTP_SENDER_EMAIL")
-	sender_name = os.getenv("SMTP_SENDER_NAME", "Notifications")
+	sender_name = os.getenv("SMTP_SENDER_NAME", "Zindua LMS")
 
 	required = {
 		"SMTP_HOST": smtp_host,
